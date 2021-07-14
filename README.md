@@ -90,7 +90,7 @@ print('reactions that use this metabolite : ', [i.id for i in gpseq_model.metabo
     Parapyruvate-c0 <=> 2.0 Pyruvate-c0
     
     
-     reaction genes :  frozenset({<Gene gp_NODE___ONE____THREE____SIX___length___ONE____ZERO____FOUR____SEVEN____EIGHT____FOUR___cov___THREE____ONE____DOT____SEVEN____TWO____EIGHT____SIX____EIGHT____ONE_____ONE____EIGHT____EIGHT____THREE____FOUR_____ONE____EIGHT____THREE____SEVEN____THREE__ at 0x1b37d711e20>, <Gene gp_NODE___ONE____NINE____SEVEN___length___EIGHT____ONE____SIX____ZERO____FIVE___cov___EIGHT____NINE____DOT____EIGHT____NINE____ONE____THREE____SIX____SEVEN_____FIVE____TWO____THREE____EIGHT____NINE_____FIVE____THREE____ZERO____FIVE____SEVEN__ at 0x1b37d711e50>, <Gene gp_NODE___TWO____ONE____SIX___length___SEVEN____SEVEN____FOUR____THREE____ZERO___cov___THREE____ZERO____DOT____FIVE____SIX____SIX____FIVE____SIX____FIVE_____ONE____FOUR____TWO____TWO____FIVE_____ONE____THREE____SEVEN____FOUR____ZERO__ at 0x1b37d711e80>, <Gene gp_NODE___TWO____FIVE____THREE____SIX___length___ONE____ONE____FIVE____SIX____THREE___cov___TWO____TWO____DOT____EIGHT____THREE____ZERO____NINE____EIGHT____SEVEN_____TWO____ONE____EIGHT____ZERO_____TWO____SIX____SIX____FIVE__ at 0x1b37d711eb0>, <Gene gp_NODE___TWO____EIGHT____ONE____ONE___length___ONE____ZERO____FIVE____FIVE____EIGHT___cov___ONE____THREE____DOT____TWO____FOUR____ONE____SIX____FOUR____FIVE_____FOUR____ONE____SIX_____ONE____ZERO____EIGHT____FOUR__ at 0x1b37d711ee0>, <Gene gp_NODE___THREE____ZERO____FIVE____TWO___length___NINE____EIGHT____TWO____TWO___cov___ONE____THREE____DOT____FIVE____NINE____ONE____NINE____NINE____THREE_____EIGHT____THREE____EIGHT____ONE_____SEVEN____EIGHT____NINE____SIX__ at 0x1b37d711f10>, <Gene gp_NODE___EIGHT____FOUR___length___ONE____FOUR____THREE____ZERO____TWO____NINE___cov___SIX____FIVE____DOT____FIVE____TWO____SIX____NINE____ONE____FOUR_____TWO____TWO____SEVEN____SIX____EIGHT_____TWO____THREE____FOUR____THREE____SIX__ at 0x1b37d711130>, <Gene gp_NODE___THREE____EIGHT____ZERO___length___FIVE____FIVE____SIX____SEVEN____SIX___cov___SIX____THREE____DOT____TWO____EIGHT____NINE____TWO____NINE____SEVEN_____THREE____ONE____THREE____SEVEN____ONE_____THREE____ZERO____SIX____SEVEN____NINE__ at 0x1b37d711f40>, <Gene gp_NODE___THREE____EIGHT____THREE___length___FIVE____FIVE____ZERO____FOUR____TWO___cov___FOUR____ZERO____DOT____ONE____THREE____FIVE____FIVE____SEVEN____EIGHT_____FOUR____SEVEN____NINE____SIX____TWO_____FOUR____EIGHT____SIX____ONE____FIVE__ at 0x1b37d711f70>, <Gene gp_NODE___SEVEN____FIVE____SIX___length___THREE____THREE____TWO____FOUR____SEVEN___cov___ONE____EIGHT____DOT____ONE____FIVE____FOUR____NINE____FOUR____SEVEN_____THREE____ONE____ZERO____TWO____SEVEN_____THREE____ZERO____THREE____SIX____TWO__ at 0x1b37d711fa0>, <Gene gp_NODE___EIGHT____ONE____NINE____THREE___length___FOUR____ZERO____SIX____FIVE___cov___ONE____SIX____DOT____ONE____TWO____ONE____SIX____NINE____SIX_____THREE____SEVEN____EIGHT____FIVE_____THREE____THREE____ZERO____THREE__ at 0x1b37d711fd0>, <Gene gp_NODE___NINE____NINE____ZERO___length___TWO____SIX____EIGHT____THREE____FIVE___cov___ONE____SIX____DOT____SEVEN____FIVE____ONE____SEVEN____ONE____EIGHT_____ONE____THREE____NINE____NINE____TWO_____ONE____FOUR____SEVEN____ZERO____FIVE__ at 0x1b37d7111f0>}) 
+     reaction genes :  frozenset({<Gene gp_NODE___TWO____ONE____SIX___length___SEVEN____SEVEN____FOUR____THREE____ZERO___cov___THREE____ZERO____DOT____FIVE____SIX____SIX____FIVE____SIX____FIVE_____ONE____FOUR____TWO____TWO____FIVE_____ONE____THREE____SEVEN____FOUR____ZERO__ at 0x271081c3e20>, <Gene gp_NODE___TWO____FIVE____THREE____SIX___length___ONE____ONE____FIVE____SIX____THREE___cov___TWO____TWO____DOT____EIGHT____THREE____ZERO____NINE____EIGHT____SEVEN_____TWO____ONE____EIGHT____ZERO_____TWO____SIX____SIX____FIVE__ at 0x271081c3e50>, <Gene gp_NODE___TWO____EIGHT____ONE____ONE___length___ONE____ZERO____FIVE____FIVE____EIGHT___cov___ONE____THREE____DOT____TWO____FOUR____ONE____SIX____FOUR____FIVE_____FOUR____ONE____SIX_____ONE____ZERO____EIGHT____FOUR__ at 0x271081c3e80>, <Gene gp_NODE___THREE____ZERO____FIVE____TWO___length___NINE____EIGHT____TWO____TWO___cov___ONE____THREE____DOT____FIVE____NINE____ONE____NINE____NINE____THREE_____EIGHT____THREE____EIGHT____ONE_____SEVEN____EIGHT____NINE____SIX__ at 0x271081c3eb0>, <Gene gp_NODE___THREE____EIGHT____ZERO___length___FIVE____FIVE____SIX____SEVEN____SIX___cov___SIX____THREE____DOT____TWO____EIGHT____NINE____TWO____NINE____SEVEN_____THREE____ONE____THREE____SEVEN____ONE_____THREE____ZERO____SIX____SEVEN____NINE__ at 0x271081c3ee0>, <Gene gp_NODE___THREE____EIGHT____THREE___length___FIVE____FIVE____ZERO____FOUR____TWO___cov___FOUR____ZERO____DOT____ONE____THREE____FIVE____FIVE____SEVEN____EIGHT_____FOUR____SEVEN____NINE____SIX____TWO_____FOUR____EIGHT____SIX____ONE____FIVE__ at 0x271081c3f10>, <Gene gp_NODE___SEVEN____FIVE____SIX___length___THREE____THREE____TWO____FOUR____SEVEN___cov___ONE____EIGHT____DOT____ONE____FIVE____FOUR____NINE____FOUR____SEVEN_____THREE____ONE____ZERO____TWO____SEVEN_____THREE____ZERO____THREE____SIX____TWO__ at 0x271081c3f40>, <Gene gp_NODE___EIGHT____ONE____NINE____THREE___length___FOUR____ZERO____SIX____FIVE___cov___ONE____SIX____DOT____ONE____TWO____ONE____SIX____NINE____SIX_____THREE____SEVEN____EIGHT____FIVE_____THREE____THREE____ZERO____THREE__ at 0x271081c3f70>, <Gene gp_NODE___EIGHT____FOUR___length___ONE____FOUR____THREE____ZERO____TWO____NINE___cov___SIX____FIVE____DOT____FIVE____TWO____SIX____NINE____ONE____FOUR_____TWO____TWO____SEVEN____SIX____EIGHT_____TWO____THREE____FOUR____THREE____SIX__ at 0x271081c3fa0>, <Gene gp_NODE___ONE____THREE____SIX___length___ONE____ZERO____FOUR____SEVEN____EIGHT____FOUR___cov___THREE____ONE____DOT____SEVEN____TWO____EIGHT____SIX____EIGHT____ONE_____ONE____EIGHT____EIGHT____THREE____FOUR_____ONE____EIGHT____THREE____SEVEN____THREE__ at 0x271081c3dc0>, <Gene gp_NODE___NINE____NINE____ZERO___length___TWO____SIX____EIGHT____THREE____FIVE___cov___ONE____SIX____DOT____SEVEN____FIVE____ONE____SEVEN____ONE____EIGHT_____ONE____THREE____NINE____NINE____TWO_____ONE____FOUR____SEVEN____ZERO____FIVE__ at 0x271081c3fd0>, <Gene gp_NODE___ONE____NINE____SEVEN___length___EIGHT____ONE____SIX____ZERO____FIVE___cov___EIGHT____NINE____DOT____EIGHT____NINE____ONE____THREE____SIX____SEVEN_____FIVE____TWO____THREE____EIGHT____NINE_____FIVE____THREE____ZERO____FIVE____SEVEN__ at 0x271081c3df0>}) 
     
     
     
@@ -104,7 +104,7 @@ print('reactions that use this metabolite : ', [i.id for i in gpseq_model.metabo
     charge :  -1
     elements :  {'C': 3, 'H': 3, 'O': 3}
     weight :  87.05412
-    reactions that use this metabolite :  ['rxn00491_c0', 'rxn10951_c0', 'rxn00801_c0', 'rxn00250_c0', 'rxn01735_c0', 'rxn00727_c0', 'rxn00840_c0', 'rxn02210_c0', 'rxn15267_c0', 'rxn01307_c0', 'rxn01354_c0', 'rxn12670_c0', 'rxn09402_c0', 'rxn03379_c0', 'rxn00164_c0', 'rxn00147_c0', 'rxn00328_c0', 'rxn00162_c0', 'rxn00258_c0', 'rxn00422_c0', 'rxn00154_c0', 'rxn15021_c0', 'rxn09167_c0', 'rxn02185_c0', 'rxn00148_c0', 'rxn02900_c0', 'rxn02925_c0', 'rxn00165_c0', 'rxn00517_c0', 'rxn05109_c0', 'rxn11703_c0', 'rxn14077_c0', 'rxn03924_c0', 'rxn05485_c0', 'rxn14245_c0', 'rxn08535_c0', 'rxn01202_c0', 'rxn01990_c0', 'rxn00950_c0', 'rxn15044_c0', 'rxn00168_c0', 'rxn00726_c0', 'rxn00304_c0', 'rxn00499_c0', 'rxn00255_c0', 'rxn00003_c0', 'rxn01644_c0', 'rxn00166_c0', 'rxn00272_c0', 'rxn00278_c0', 'rxn00146_c0', 'rxn00160_c0', 'rxn05647_c0', 'rxn02230_c0', 'rxn00177_c0', 'rxn00678_c0', 'rxn06404_c0', 'rxn05617_c0', 'rxn07450_c0', 'rxn05469_c0', 'rxn00289_c0', 'rxn15266_c0', 'rxn90067_c0', 'rxn00473_c0', 'rxn03610_c0', 'rxn14068_c0', 'rxn00191_c0', 'rxn01619_c0', 'rxn02346_c0', 'rxn05560_c0', 'rxn06282_c0', 'rxn00159_c0', 'rxn03884_c0', 'rxn05607_c0', 'rxn00145_c0', 'rxn15166_c0', 'rxn00460_c0', 'rxn00500_c0', 'rxn00904_c0', 'rxn04092_c0', 'rxn12707_c0', 'rxn00149_c0', 'rxn05226_c0', 'rxn01242_c0', 'rxn01322_c0', 'rxn00011_c0', 'rxn00157_c0', 'rxn03909_c0', 'rxn00411_c0', 'rxn05988_c0', 'rxn00656_c0', 'rxn04675_c0', 'rxn00783_c0', 'rxn11731_c0', 'rxn00161_c0', 'rxn00966_c0', 'rxn00566_c0', 'rxn00004_c0', 'rxn00987_c0', 'rxn05938_c0', 'rxn00540_c0', 'rxn01667_c0', 'rxn08043_c0', 'rxn15491_c0', 'rxn01203_c0', 'rxn03841_c0', 'rxn16114_c0']
+    reactions that use this metabolite :  ['rxn00491_c0', 'rxn10951_c0', 'rxn16114_c0', 'rxn00801_c0', 'rxn05938_c0', 'rxn00250_c0', 'rxn01735_c0', 'rxn00727_c0', 'rxn00840_c0', 'rxn02210_c0', 'rxn00003_c0', 'rxn15267_c0', 'rxn01307_c0', 'rxn01354_c0', 'rxn12670_c0', 'rxn09402_c0', 'rxn00164_c0', 'rxn03379_c0', 'rxn00147_c0', 'rxn00328_c0', 'rxn00258_c0', 'rxn00422_c0', 'rxn00162_c0', 'rxn00154_c0', 'rxn15021_c0', 'rxn09167_c0', 'rxn02185_c0', 'rxn02900_c0', 'rxn02925_c0', 'rxn00165_c0', 'rxn00517_c0', 'rxn14077_c0', 'rxn05109_c0', 'rxn05485_c0', 'rxn03924_c0', 'rxn14245_c0', 'rxn08535_c0', 'rxn01202_c0', 'rxn01990_c0', 'rxn00950_c0', 'rxn15044_c0', 'rxn00168_c0', 'rxn00726_c0', 'rxn00304_c0', 'rxn00499_c0', 'rxn00255_c0', 'rxn00166_c0', 'rxn01644_c0', 'rxn00272_c0', 'rxn00146_c0', 'rxn00278_c0', 'rxn00177_c0', 'rxn02230_c0', 'rxn00160_c0', 'rxn05647_c0', 'rxn00678_c0', 'rxn06404_c0', 'rxn07450_c0', 'rxn05617_c0', 'rxn00289_c0', 'rxn05469_c0', 'rxn15266_c0', 'rxn90067_c0', 'rxn00473_c0', 'rxn03610_c0', 'rxn00191_c0', 'rxn01619_c0', 'rxn02346_c0', 'rxn05560_c0', 'rxn14068_c0', 'rxn00159_c0', 'rxn15166_c0', 'rxn05607_c0', 'rxn00500_c0', 'rxn00145_c0', 'rxn00460_c0', 'rxn00904_c0', 'rxn04092_c0', 'rxn00149_c0', 'rxn12707_c0', 'rxn01242_c0', 'rxn01322_c0', 'rxn06282_c0', 'rxn00656_c0', 'rxn03909_c0', 'rxn05226_c0', 'rxn00411_c0', 'rxn00011_c0', 'rxn00157_c0', 'rxn04675_c0', 'rxn11731_c0', 'rxn00783_c0', 'rxn00566_c0', 'rxn05988_c0', 'rxn00161_c0', 'rxn00987_c0', 'rxn03841_c0', 'rxn11703_c0', 'rxn01667_c0', 'rxn08043_c0', 'rxn00966_c0', 'rxn03884_c0', 'rxn00004_c0', 'rxn01203_c0', 'rxn00148_c0', 'rxn00540_c0', 'rxn15491_c0']
     
 
 All these fields are editable. 
@@ -433,9 +433,11 @@ for i in  all_reactions.reactions:
         candidate_reactions[i] = np.random.uniform()
 ```
 
+We will also use a different criteria to choose the gapfilled reaction. Instead of 'min_reactions' we use 'min_cost', selecting the set with a minimum sum of costs.
+
 
 ```python
-model3, obj3, new_reacs3 = gapfill_function.gapfill(all_reactions, draft_reaction_ids, candidate_reactions, 'ATHyd', result_selection = 'min_reactions', medium=Nit_media)
+model3, obj3, new_reacs3 = gapfill_function.gapfill(all_reactions, draft_reaction_ids, candidate_reactions, 'bio1', result_selection = 'min_costs', medium=Nit_media)
 
 ```
 
@@ -484,14 +486,14 @@ model3, obj3, new_reacs3 = gapfill_function.gapfill(all_reactions, draft_reactio
     Flux through biomass reaction is 1.00000000
     Delta is 4.00
     Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
-    Flux through biomass reaction is 1.00000000
+    Flux through biomass reaction is 0.08799760
     Delta is 2.00
     Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
-    Flux through biomass reaction is 1.00000000
+    Flux through biomass reaction is 0.06633944
     Delta is 1.00
     Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
-    Flux through biomass reaction is 1.00000000
-    Objective value is 1.000000.
+    Flux through objective reaction is 0.00000000
+    Objective value is 0.066353.
     
 
 
@@ -505,14 +507,14 @@ solution = model3.optimize()
 print(solution.objective_value)
 ```
 
-    number of added reactions :  5
-    1000.0
+    number of added reactions :  37
+    66.35260305350873
     
 
 ### Quick idea of what to do when no flux is observed with a particular media
 
 
-1) Run a gapfill with the complete media option (as in above)
+1) Run a gapfill with the complete media option (as in [11])
 
 2) Run flux variability analysis (for big models this takes a long time to run):
 
