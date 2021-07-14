@@ -156,7 +156,7 @@ def get_minimum(R, R_flux, R_cost, D, criteria=None):
     else:
         return R[-1], 0
     
-def latendresse_gapfill(all_reactions_split, N, M, B, output):
+def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
     """
     Function based on Latendresse BMC Bioinformatics 2014.
     Input:
@@ -165,7 +165,7 @@ def latendresse_gapfill(all_reactions_split, N, M, B, output):
         M is dictionary of all candidate reactions mapping to their cost.
         split_EX_reactions are all environment defining reactions that the model can use, 
             these are not associated to a cost, hence not found in M.
-        B is the name of the biomass reaction.
+        B is the name of the objective function.
     Output:
         List of the minimum set of candidate reactions to add to gapfill the model.
     """
@@ -175,6 +175,7 @@ def latendresse_gapfill(all_reactions_split, N, M, B, output):
     D = [] #deltas
     alpha = 0
     beta = 2 * len(M)
+    delta = int((alpha + beta) / 2.0) #Take the floor function of the mean of alpha and beta.
     
     #format reactions for gurobi model
     reaction_dict = all_reactions_split.get_gurobi_reaction_dict(all_reactions_split.reactions.keys())
@@ -184,11 +185,18 @@ def latendresse_gapfill(all_reactions_split, N, M, B, output):
     
     
     #main loop
+    gu_model = build_gurobi_model(reaction_dict, metabolite_dict, B, N, M, delta)
+    
+    max_obj = gu_model.getVarByName(B).X
+    
+    limit = 0.05*max_obj
+    
     while abs(alpha - beta) > 1:
-        delta = int((alpha + beta) / 2.0) #Take the floor function of the mean of alpha and beta.
+        
+        delta = int((alpha + beta) / 2.0)
         print ('Delta is {:.2f}'.format(delta))
         gu_model = build_gurobi_model(reaction_dict, metabolite_dict, B, N, M, delta)
-        if gu_model.getVarByName(B).X > 0:
+        if gu_model.getVarByName(B).X > limit:
             print ('Flux through biomass reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
             beta = delta
             
@@ -196,6 +204,7 @@ def latendresse_gapfill(all_reactions_split, N, M, B, output):
             
             #reaction ids
             R.append([var.VarName for var in gu_model.getVars() if var.VarName in N or gu_model.getVarByName(var.VarName).X > 0])
+            
             
             # reaction fluxes
             R_flux.append([gu_model.getVarByName(e).X for e in M if gu_model.getVarByName(e).X > 0])
@@ -207,10 +216,10 @@ def latendresse_gapfill(all_reactions_split, N, M, B, output):
             D.append(delta)
            
         else:
-            print ('Flux through biomass reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
+            print ('Flux through objective reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
             alpha = delta
-            
-    minimum_set = get_minimum(R, R_flux, R_cost, D) #List that has minimum nr of reactions, sum of cost or sum of flux, dependend on output.
+            pass
+    minimum_set = get_minimum(R, R_flux, R_cost, D, result_selection) #List that has minimum nr of reactions, sum of cost or sum of flux, dependend on output.
     return  minimum_set
 
 
@@ -223,11 +232,11 @@ def make_cobra_metabolites(metab_dict):
     cobra_metabs = {}
     for metab in metab_dict:
         cobra_metabs[metab] = cobra.Metabolite(metab)
-        if '_c' in metab:
-            cobra_metabs[metab].compartment = 'c'
+        if '_c0' in metab:
+            cobra_metabs[metab].compartment = 'c0'
         
-        elif '_e' in metab:
-            cobra_metabs[metab].compartment = 'e'
+        elif '_e0' in metab:
+            cobra_metabs[metab].compartment = 'e0'
             
     return cobra_metabs
         
@@ -260,64 +269,54 @@ def make_cobra_model(reaction_dict, metab_dict, reactions_in_model, objective_na
 
 
 
-def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medium = 'complete', default_cost = 1,
-            compare_to_added_reactions = False, output_reactions = True, latendresse_result_selection = 'min_cost'):
+def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medium = 'complete', default_cost = 1, result_selection = 'min_cost'):
     '''
-    Gapfill an incomplete model using the following input:
-        - all_reactions 
-            This is a Reaction class object containing the chemical information of all reactions 
-            (bounds, stoichiometry and metabolites).
-            
-        - draft_reaction_ids 
-            This is a set containing all the reaction ids in the input model for gap filling.
-            
-        - candidate_reactions 
-            This is a dictionary mapping reaction_ids to their cost during gap filling. When reactions are not present in 
-            candidate_reactions, their cost will be default_cost.
-            
-        - obj_id 
-            This is the id correspoding to the biomass reaction in all_reactions_split.
-            
-        - medium 
-            This determines the EX_reactions that the model can use. As default a complete medium is assumed, where the model
-            can use all extracellular metabolites that are defined in all_reactions. (This means they are available extra cellularly, 
-            not that a transport reaction is added by default!) A reaction class can be given to medium for custom media.
-            
-        - default_cost
-            Every reaction in all_reactions that is not in candidate_reactions or A_incomplete_reaction_ids will get this cost for
-            gap filling.
+    Gapfill an incomplete model
     
-    Output:
+    Parameters
+    ----------
+    all_reactions, class_obj
+    Reaction class object containing the chemical information of all reactions 
+            (bounds, stoichiometry and metabolites).
+    
+    draft_reaction_ids, set
+    Set containing all the reaction ids in the input model for gap filling.
             
-        - compare_to_added_reactions 
-            This evalutates all reactions by comparing reactions added during gap filling to the reactions that are given as a set to 
-            compare_to_added_reactions. Reactions in compare_added_reactions that are found back in the reactions added during gapfilling
-            are counted as TP, added reactions that were not in compare_to_added_reactions are counted as FP, reactions that were not
-            in compare_to_added_reactions and not added are counted as TN and reactions that were in compare_to_added_reactions but not added are counted as FN.
-            The TP, FP, TN, FN are then returned.
+    candidate_reactions, dict
+    This is a dictionary mapping reaction_ids to their cost during gap filling. 
+    When reactions are not present in candidate_reactions, their cost will be default_cost.
+         
+    obj_id, str
+    the reaction id correspoding to the objective.
             
+    medium, dict
+    The  exchange reactions that the model can use. 
+    As default a complete medium is assumed, where the model can use all extracellular metabolites 
+    that are used by some reactions present in all_reactions. 
+    (This means the metabolites are available extracellularly, not that a transport reaction is added) 
+    A custom media can be provided as a dict
+    [reaction_id]:{['lower_bound']:-1, ['upper_bound']:1, [metabolites] : [metabolite]: stoichiometry}
             
-        - output_reactions 
-            This returns the set of reaction ids that were added during gap filling.
-            
-        - latendresse_result_selection 
-            This is the parameter that specifies which of the gapfill solutions should be returned.
-            It can either be the set that has the lowest cost ("min_cost") [default], lowest number of reactions ("min_reactions"), 
-            or the lowest flux ("min_flux").
-            
-    Reactions from all_reactions are added to candidate_reactions if they are not in A_incomplete_reaction_ids or candidate_reactions. 
-    This ensures that all reactions are considered as candidates during gap filling, while only reactions given as input with 
-    candidate_reactions have a custom cost.
-    During gap filling reactions are made unidirectional, so bidirectional reactions are split into a forward and reverse version.
-    EX_reactions are added to the model. These specifiy which metabolites are avaiable in the medium. When no custom medium is used,
-    the model will be gap filled on a complete medium. The model is gap filled, and the result is changed back into bidirectional reactions.
-    Reactions added during gap filling are stored in the set added_reactions. This can be used to calculate TP, FP, TN and FN, where
-    added EX reactions are not counted.
+    default_cost, float
+    Reactions in all_reactions that are not in candidate_reactions or in the
+    draft model will get this cost for gap filling.
+    
+    Returns
+    -------
+    cobra model obj
+    the value of the obj
+    list of added reactions
     '''
+    all_reacs = deepcopy(all_reactions.reactions)
+    
+    all_reacs_obj = Reaction()
+    all_reacs_obj.reactions = all_reacs.copy()
+    
+    cand_reacs = candidate_reactions.copy()
     
     #Create medium-defining external reactions or use ex_reactions from custom medium.
     if medium == 'complete':
-        metabolites = all_reactions.get_gurobi_metabolite_dict()
+        metabolites = all_reacs_obj.get_gurobi_metabolite_dict()
         
         ex_reactions = Reaction()
         ex_reactions.reactions = create_EX_reactions(metabolites)
@@ -328,23 +327,32 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
     else:
         ex_reactions = Reaction()
         ex_reactions.reactions = medium#same format as the output of the function create_EX_reactions
+        for i in ex_reactions.reactions:
+            cand_reacs[i] = 0.0 #add media reactions with a zero cost
         
-    all_reactions.reactions = all_reactions.add_dict(all_reactions.reactions, ex_reactions.reactions)
+    all_reacs = all_reacs_obj.add_dict(all_reacs_obj.reactions, ex_reactions.reactions)
     
+    all_reacs_obj.reactions = all_reacs
+    
+    
+    
+    #make sure the model cannot import biomass :)
+    all_reacs['EX_cpd11416_e0']={'upper_bound':1, 'lower_bound':0, 'metabolites':{'cpd11416_c0':-1}}
     
     #Add reactions from all_reactions to candidate_reactions, with cost = default_cost.
-    for reaction in all_reactions.reactions:
-        if (reaction not in draft_reaction_ids) and (reaction not in candidate_reactions):
-            candidate_reactions[reaction] = default_cost
+    for reaction in all_reacs:
+        if (reaction not in draft_reaction_ids) and (reaction not in cand_reacs):
+            cand_reacs[reaction] = default_cost
+    
     
     for reaction in candidate_reactions:
         if reaction in draft_reaction_ids:
-            del candidate_reactions[reaction] #Delete reaction from candidate_reactions if it is present in the starting model.
+            del cand_reacs[reaction] #Delete reaction from candidate_reactions if it is present in the starting model.
         
     #Split bidirectional reactions into a forward and reverse reaction.
     all_reactions_split = Reaction()
     
-    all_reactions_split.reactions = all_reactions.split_all_bidirectional_reactions(reaction_dictionary=all_reactions.reactions)
+    all_reactions_split.reactions = all_reacs_obj.split_all_bidirectional_reactions(all_reacs_obj.reactions)
     
     #Add reverse reactions to draft_reaction_ids_split and candidate_reactions.
     draft_reaction_ids_split = set()
@@ -355,28 +363,30 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
             draft_reaction_ids_split.add(reaction)
         else:#If forward version of a reverse reaction is in candidate_reactions.
             if '_r' in reaction:
-                candidate_reactions[reaction] = candidate_reactions[forward_version] #Give reverse reaction same cost as forward version.
+                cand_reacs[reaction] = cand_reacs[forward_version] #Give reverse reaction same cost as forward version.
     
         
     
     #Run gapfilling algorithm
-    split_gapfill_result, delta = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, candidate_reactions, obj_id, latendresse_result_selection)
+    split_gapfill_result, delta = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
     
     gapfill_result = set([r.replace('_r', '') for r in split_gapfill_result])
     
     added_reactions = gapfill_result.difference(draft_reaction_ids) #All reactions that are added to the model during gapfilling.
     #Create cobra model
     
-    metab_dict = all_reactions.get_gurobi_metabolite_dict(all_reactions.reactions.keys())
     
-    cobra_model = make_cobra_model(all_reactions.reactions, metab_dict, gapfill_result, obj_id)
+    
+    metab_dict = all_reacs_obj.get_gurobi_metabolite_dict()
+    
+    cobra_model = make_cobra_model(all_reacs, metab_dict, gapfill_result, obj_id)
     
     objective_value = cobra_model.optimize().objective_value
     
     print ('Objective value is %f.' %objective_value)
 
    
-    return cobra_model, objective_value, added_reactions
+    return cobra_model, objective_value, added_reactions#, gapfill_result, all_reacs_obj
 
 
     

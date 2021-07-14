@@ -282,7 +282,7 @@ class Reaction:
         else:
             return reaction, False
         
-    def split_all_bidirectional_reactions(self, reaction_dictionary=None):
+    def split_all_bidirectional_reactions(self, reaction_dictionary):
         '''
         Split all bidirectional reactions in a dictionary (of similar structure to self.reactions), or all reactions in self.reactions.
         Splitted reactions become two unidirectional reactions, reaction_id and reaction_id_r.
@@ -292,32 +292,16 @@ class Reaction:
         '''
         
         
-        if reaction_dictionary is None:
-            
-            if self.reactions is None:
-                return None
-            
-            for reaction in self.reactions:
-                r1, r2 = self.split_bidirectional_reaction(self.reactions[reaction])
-                if r2:
-                    r2_name = reaction + '_r'
-                    self.reactions[reaction] = r1
-                    self.reactions[r2_name] = r2
+        _d = {}
+        
+        for reaction in reaction_dictionary:
+            r1, r2 = self.split_bidirectional_reaction(reaction_dictionary[reaction])
+            _d[reaction] = r1
+            if r2:
+                r2_name = reaction + '_r'
+                _d[r2_name] = r2
                     
-            return self.reactions
-                    
-        else:
-            _d = {}
-            
-            for reaction in reaction_dictionary:
-                r1, r2 = self.split_bidirectional_reaction(reaction_dictionary[reaction])
-                _d[reaction] = r1
-                if r2:
-                    r2_name = reaction + '_r'
-                    
-                    _d[r2_name] = r2
-                    
-            return _d
+        return _d
         
     def read_biochemistry_table(self, filePath):
         """
