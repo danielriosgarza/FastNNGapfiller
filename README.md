@@ -509,10 +509,10 @@ print(solution.objective_value)
     1000.0
     
 
-### Quick idea of what to do when no flux is observed on a particular media
+### Quick idea of what to do when no flux is observed with a particular media
 
 
-1) Run a gapfill on the with complete media option (as in [5])
+1) Run a gapfill with the complete media option (as in above)
 
 2) Run flux variability analysis (for big models this takes a long time to run):
 
