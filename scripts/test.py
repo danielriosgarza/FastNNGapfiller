@@ -11,6 +11,7 @@ logging.getLogger("cobra").setLevel(logging.ERROR)
 from reaction_class import Reaction
 import gapfill_function
 
+from build_model import *
 
 import os
 from pathlib import Path
@@ -47,29 +48,31 @@ gapfilled_model_location = os.path.join(path.parent, 'files',  'models', 'all_bi
 
 model, obj, new_reacs = gapfill_function.gapfill(all_reactions, draft_reaction_ids, {}, 'bio1', result_selection = 'min_reactions')
 
-# Add a different media
 
-media_file = os.path.join(path.parent, 'files', 'biochemistry', 'Nitrogen-Nitrite_media.tsv')
+model = refine_model(model)
+# # Add a different media
 
-Nit_media = {}
+# media_file = os.path.join(path.parent, 'files', 'biochemistry', 'Nitrogen-Nitrite_media.tsv')
 
-with open(media_file) as f:
-    f.readline()
-    for line in f:
-        a = line.strip().split('\t')
-        Nit_media['EX_' + a[0] + '_e0'] = {'lower_bound':-1, 'upper_bound':1, 'metabolites':{a[0]+'_e0':-1.0}}
+# Nit_media = {}
 
-model2, obj2, new_reacs2 = gapfill_function.gapfill(all_reactions, draft_reaction_ids, {}, 'bio1', result_selection = 'min_reactions', medium=Nit_media)
+# with open(media_file) as f:
+#     f.readline()
+#     for line in f:
+#         a = line.strip().split('\t')
+#         Nit_media['EX_' + a[0] + '_e0'] = {'lower_bound':-1, 'upper_bound':1, 'metabolites':{a[0]+'_e0':-1.0}}
 
-
-# Add costs to reactions
-
-#select random reaction and add random costs between 0 and 1
-candidate_reactions = {}
-for i in  all_reactions.reactions:
-    if np.random.uniform()<0.02:
-        candidate_reactions[i] = np.random.uniform()
+# model2, obj2, new_reacs2 = gapfill_function.gapfill(all_reactions, draft_reaction_ids, {}, 'bio1', result_selection = 'min_reactions', medium=Nit_media)
 
 
-model3, obj3, new_reacs3 = gapfill_function.gapfill(all_reactions, draft_reaction_ids, candidate_reactions, 'bio1', result_selection = 'min_reactions')
+# # Add costs to reactions
+
+# #select random reaction and add random costs between 0 and 1
+# candidate_reactions = {}
+# for i in  all_reactions.reactions:
+#     if np.random.uniform()<0.02:
+#         candidate_reactions[i] = np.random.uniform()
+
+
+# model3, obj3, new_reacs3 = gapfill_function.gapfill(all_reactions, draft_reaction_ids, candidate_reactions, 'bio1', result_selection = 'min_reactions')
 
