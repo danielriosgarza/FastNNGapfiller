@@ -38,9 +38,9 @@ def make_prediction(input_data, NN):
 
     #ugly i know. but do not have a different solution at this point
     if single_input:
-        prediction  = prediction[0].T
+        prediction  = prediction[0]
     else:
-        prediction = prediction.T
+        prediction = prediction
 
     return prediction
 
