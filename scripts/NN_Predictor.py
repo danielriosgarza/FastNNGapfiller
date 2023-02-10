@@ -20,6 +20,20 @@ NN_path = os.path.join(path.parent, 'files', 'NN')
 
 #Function that loads the Neural network, maybe unneccesary; path is path to .h5 file
 def load_NN(path=None):
+    '''
+    
+
+    Parameters
+    ----------
+    path : TYPE, optional
+        DESCRIPTION. The default is None.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
     if path is None:
         print('Loading Default NN (ModelSEED)')
         path = os.path.join(NN_path, 'NN_MS.h5')
@@ -28,10 +42,47 @@ def load_NN(path=None):
     return tf.keras.models.load_model(path, custom_objects={"custom_loss": 'binary_crossentropy'})
 
 def load_ids(path=NN_path+'/rxn_ids_ModelSEED.npy'):
+    '''
+    
+
+    Parameters
+    ----------
+    path : TYPE, optional
+        DESCRIPTION. The default is NN_path+'/rxn_ids_ModelSEED.npy'.
+
+    Returns
+    -------
+    ids : TYPE
+        DESCRIPTION.
+
+    '''
     ids = np.load(path, allow_pickle=True).astype('str')
     return ids
 #Function that makes a prediction based on input_data using Neural Network (NN)
 def make_prediction(input, NN=None, rxn_ids=None):
+    '''
+    
+
+    Parameters
+    ----------
+    input : TYPE
+        DESCRIPTION.
+    NN : TYPE, optional
+        DESCRIPTION. The default is None.
+    rxn_ids : TYPE, optional
+        DESCRIPTION. The default is None.
+
+    Raises
+    ------
+    Exception
+        DESCRIPTION.
+
+    Returns
+    -------
+    prediction : TYPE
+        DESCRIPTION.
+
+    '''
     if rxn_ids is None:
         rxn_ids = load_ids()
     if isinstance(input, cobra.core.model.Model):
@@ -84,6 +135,27 @@ def make_prediction(input, NN=None, rxn_ids=None):
 
 #function that generates a binary input based on a list of reaction ids
 def convert_reaction_list(reaction_set, NN_reaction_ids=None):
+    '''
+    
+
+    Parameters
+    ----------
+    reaction_set : TYPE
+        DESCRIPTION.
+    NN_reaction_ids : TYPE, optional
+        DESCRIPTION. The default is None.
+
+    Raises
+    ------
+    Exception
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
     if NN_reaction_ids is None:
         if(list(reaction_set)[0][:3] == 'rxn'):
             model_type = 'ModelSEED'
