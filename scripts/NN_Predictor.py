@@ -24,7 +24,7 @@ def load_NN(path=None):
         print('Loading Default NN (ModelSEED)')
         path = os.path.join(NN_path, 'NN_MS.h5')
     else:
-        print('Loading user provided network')
+        print('Loading network at user provided path')
     return tf.keras.models.load_model(path, custom_objects={"custom_loss": 'binary_crossentropy'})
 
 def load_ids(path=NN_path+'/rxn_ids_ModelSEED.npy'):
@@ -39,6 +39,7 @@ def make_prediction(input, NN=None, rxn_ids=None):
     else:
         if (isinstance(input, pd.DataFrame)):
             input.reindex(rxn_ids)
+            df_columns = input.columns
             input = input.T
         else:
             if isinstance(input, dict):
@@ -78,7 +79,7 @@ def make_prediction(input, NN=None, rxn_ids=None):
     else:
         raise Exception("data has wrong shape: ", input.shape, 'instead of ', NN.input_shape)
     if isinstance(input, pd.DataFrame):
-        prediction = pd.DataFrame(index=rxn_ids, columns=input.columns, data=prediction.T)
+        prediction = pd.DataFrame(index=rxn_ids, columns=df_columns, data=prediction.T)
     return prediction
 
 #function that generates a binary input based on a list of reaction ids
