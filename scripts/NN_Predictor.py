@@ -35,13 +35,14 @@ def make_prediction(input, NN=None, rxn_ids=None):
     if rxn_ids is None:
         rxn_ids = load_ids()
     if isinstance(input, cobra.core.model.Model):
-        input = convert_reaction_list(input.reactions.list_attr('id'))
+        input = convert_reaction_list(input.reactions.list_attr('id'), rxn_ids)
     else:
         if (isinstance(input, pd.DataFrame)):
-            input.reindex(columns = rxn_ids)
+            input.reindex(rxn_ids)
+            input = input.T
         else:
             if isinstance(input, dict):
-                input = convert_reaction_list([i for i in input if input[i]==1])
+                input = convert_reaction_list([i for i in input if input[i]==1], rxn_ids)
             else:
                 if not np.isin(input, [0,1]).all():
                     print('Converting to binary array:')
@@ -49,6 +50,8 @@ def make_prediction(input, NN=None, rxn_ids=None):
                         input = convert_reaction_list(input)
                     except:
                         raise Exception("Conversion failed")
+                else:
+                    input = np.asarray(input.T)
 
     if NN is None:
         NN = load_NN()
@@ -75,7 +78,7 @@ def make_prediction(input, NN=None, rxn_ids=None):
     else:
         raise Exception("data has wrong shape: ", input.shape, 'instead of ', NN.input_shape)
     if isinstance(input, pd.DataFrame):
-        prediction = pd.DataFrame(index=input.index, columns=input.columns, data=prediction)
+        prediction = pd.DataFrame(index=rxn_ids, columns=input.columns, data=prediction.T)
     return prediction
 
 #function that generates a binary input based on a list of reaction ids
