@@ -315,32 +315,29 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
     cand_reacs = candidate_reactions.copy()
     
     #Create medium-defining external reactions or use ex_reactions from custom medium.
-    if medium == 'complete':
-        metabolites = all_reacs_obj.get_gurobi_metabolite_dict()
+    # if medium == 'complete':
+    #     metabolites = all_reacs_obj.get_gurobi_metabolite_dict()
         
-        ex_reactions = Reaction()
-        ex_reactions.reactions = create_EX_reactions(metabolites)
-        
-        
-        
+    #     ex_reactions = Reaction()
+    #     ex_reactions.reactions = create_EX_reactions(metabolites)
     
-    else:
-        ex_reactions = Reaction()
-        ex_reactions.reactions = medium#same format as the output of the function create_EX_reactions
-        for i in ex_reactions.reactions:
-            cand_reacs[i] = 0.0 #add media reactions with a zero cost
+    # else:
+    #     ex_reactions = Reaction( fixed_bounds=medium)
+    #     ex_reactions.reactions = medium#same format as the output of the function create_EX_reactions
+    #     for i in ex_reactions.reactions:
+    #         cand_reacs[i] = 0.0 #add media reactions with a zero cost
         
-    all_reacs = all_reacs_obj.add_dict(all_reacs_obj.reactions, ex_reactions.reactions)
+    # all_reacs = all_reacs_obj.add_dict(all_reacs_obj.reactions, ex_reactions.reactions)
     
-    all_reacs_obj.reactions = all_reacs
+    # all_reacs_obj.reactions = all_reacs.reactions
     
     
     
     #make sure the model cannot import biomass :)
-    all_reacs['EX_cpd11416_e0']={'upper_bound':1, 'lower_bound':0, 'metabolites':{'cpd11416_c0':-1}}
+    all_reacs_obj.reactions['EX_cpd11416_e0']={'upper_bound':1, 'lower_bound':0, 'metabolites':{'cpd11416_c0':-1}}
     
     #Add reactions from all_reactions to candidate_reactions, with cost = default_cost.
-    for reaction in all_reacs:
+    for reaction in all_reacs_obj.reactions:
         if (reaction not in draft_reaction_ids) and (reaction not in cand_reacs):
             cand_reacs[reaction] = default_cost
     
