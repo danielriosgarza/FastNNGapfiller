@@ -29,8 +29,7 @@ def refine_model(gpfilledModel, draftModel=None):
     
     mc = gpfilledModel.copy()
     
-    for metab in gpfilledModel.metabolites:
-        
+    for metab in mc.metabolites:
         
         
         
@@ -67,7 +66,7 @@ def refine_model(gpfilledModel, draftModel=None):
             metab.formula = ''
             metab.name = metab.id
     
-    for reac in gpfilledModel.reactions:
+    for reac in mc.reactions:
         reacName = reac.id.split('_')[0]
         #reacSufix = reac.id.split('_')[1]
         
@@ -92,12 +91,12 @@ def refine_model(gpfilledModel, draftModel=None):
                 if mc.reactions.has_id(reaction.id):
                     mc.reactions.get_by_id(reaction.id).gene_reaction_rule = reaction.gene_reaction_rule
                     
-    #change internal fluxes to +/- 1000            
-    for reaction in mc.reactions:
+#     #change internal fluxes to +/- 1000            
+#     for reaction in mc.reactions:
         
-        if not reaction.boundary:
-            reaction.lower_bound *=1000.
-            reaction.upper_bound *= 1000.
+#         if not reaction.boundary:
+#             reaction.lower_bound *=1000.
+#             reaction.upper_bound *= 1000.
             
         
             
