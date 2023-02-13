@@ -101,11 +101,11 @@ class Reaction:
         reactions={}
         for reaction in model.reactions:
             
-            if 'EX_' not in reaction.id:
+#             if 'EX_' not in reaction.id:
             
-                reactions[reaction.id] = {'lower_bound': (reaction.lower_bound and abs(reaction.lower_bound)/reaction.lower_bound or 0), 'upper_bound': (reaction.upper_bound and abs(reaction.upper_bound)/reaction.upper_bound or 0)}
-                mets = reaction.metabolites
-                reactions[reaction.id]['metabolites']={i.id:mets[i] for i in mets}
+            reactions[reaction.id] = {'lower_bound': (reaction.lower_bound and abs(reaction.lower_bound)/reaction.lower_bound or 0), 'upper_bound': (reaction.upper_bound and abs(reaction.upper_bound)/reaction.upper_bound or 0)}
+            mets = reaction.metabolites
+            reactions[reaction.id]['metabolites']={i.id:mets[i] for i in mets}
                 
         return reactions
     
