@@ -10,7 +10,6 @@ from reaction_class import Reaction
 import cobra
 from copy import deepcopy
 
-
 def create_EX_reactions(metab_dict, direction = 'both'):
     '''
     Create an exchange reaction  for external metabolites in a metab_dict.
@@ -205,7 +204,6 @@ def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
             #reaction ids
             R.append([var.VarName for var in gu_model.getVars() if var.VarName in N or gu_model.getVarByName(var.VarName).X > 0])
             
-            
             # reaction fluxes
             R_flux.append([gu_model.getVarByName(e).X for e in M if gu_model.getVarByName(e).X > 0])
             
@@ -221,7 +219,6 @@ def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
             pass
     minimum_set = get_minimum(R, R_flux, R_cost, D, result_selection) #List that has minimum nr of reactions, sum of cost or sum of flux, dependend on output.
     return  minimum_set
-
 
 
 def make_cobra_metabolites(metab_dict):
@@ -268,8 +265,7 @@ def make_cobra_model(reaction_dict, metab_dict, reactions_in_model, objective_na
     return cobra_model
 
 
-
-def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medium = 'complete', default_cost = 1, result_selection = 'min_cost'):
+def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, default_cost = 1, result_selection = 'min_cost'):
     '''
     Gapfill an incomplete model
     
@@ -285,7 +281,7 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
     candidate_reactions, dict
     This is a dictionary mapping reaction_ids to their cost during gap filling. 
     When reactions are not present in candidate_reactions, their cost will be default_cost.
-         
+
     obj_id, str
     the reaction id correspoding to the objective.
             
@@ -313,26 +309,7 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
     all_reacs_obj.reactions = all_reacs.copy()
     
     cand_reacs = candidate_reactions.copy()
-    
-    #Create medium-defining external reactions or use ex_reactions from custom medium.
-    # if medium == 'complete':
-    #     metabolites = all_reacs_obj.get_gurobi_metabolite_dict()
-        
-    #     ex_reactions = Reaction()
-    #     ex_reactions.reactions = create_EX_reactions(metabolites)
-    
-    # else:
-    #     ex_reactions = Reaction( fixed_bounds=medium)
-    #     ex_reactions.reactions = medium#same format as the output of the function create_EX_reactions
-    #     for i in ex_reactions.reactions:
-    #         cand_reacs[i] = 0.0 #add media reactions with a zero cost
-        
-    # all_reacs = all_reacs_obj.add_dict(all_reacs_obj.reactions, ex_reactions.reactions)
-    
-    # all_reacs_obj.reactions = all_reacs.reactions
-    
-    
-    
+
     #make sure the model cannot import biomass :)
     all_reacs_obj.reactions['EX_cpd11416_e0']={'upper_bound':1, 'lower_bound':0, 'metabolites':{'cpd11416_c0':-1}}
     
@@ -358,30 +335,22 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
         forward_version = reaction.replace('_r', '')
         if forward_version in draft_reaction_ids:
             draft_reaction_ids_split.add(reaction)
-        else:#If forward version of a reverse reaction is in candidate_reactions.
+        else:   #If forward version of a reverse reaction is in candidate_reactions.
             if '_r' in reaction:
                 cand_reacs[reaction] = cand_reacs[forward_version] #Give reverse reaction same cost as forward version.
     
-        
-    
     #Run gapfilling algorithm
-    split_gapfill_result, delta = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
+    split_gapfill_result = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
     
     gapfill_result = set([r.replace('_r', '') for r in split_gapfill_result])
     
     added_reactions = gapfill_result.difference(draft_reaction_ids) #All reactions that are added to the model during gapfilling.
-    #Create cobra model
-    
-    
-    
-    metab_dict = all_reacs_obj.get_gurobi_metabolite_dict()
-    
-    cobra_model = make_cobra_model(all_reacs, metab_dict, gapfill_result, obj_id)
-    
-    objective_value = cobra_model.optimize().objective_value
-    
-    print ('Objective value is %f.' %objective_value)
 
+    #Create cobra model    
+    metab_dict      = all_reacs_obj.get_gurobi_metabolite_dict()
+    cobra_model     = make_cobra_model(all_reacs, metab_dict, gapfill_result, obj_id)    
+    objective_value = cobra_model.optimize().objective_value    
+    print ('Objective value is %f.' %objective_value)
    
     return cobra_model, objective_value, added_reactions#, gapfill_result, all_reacs_obj
 
