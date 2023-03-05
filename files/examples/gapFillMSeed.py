@@ -76,3 +76,10 @@ for i in p:
 
 model_NN_gf, obj, new_reacs = gapfill_function.gapfill(all_reactions, draft_reaction_ids, weights, 'bio1', medium = def_med, result_selection = 'min_reactions')
 
+
+ref_model = build_model.refine_model(NN_gf_model, draft_model)
+
+
+for reaction in ref_model.reactions:
+     if not draft_model.reactions.has_id(reaction.id):
+            print(reaction.id, "~~", reaction.build_reaction_string(use_metabolite_names = 1))
