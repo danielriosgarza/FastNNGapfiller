@@ -8,14 +8,15 @@ from csv import DictReader
 
 import os
 from pathlib import Path
-path = Path.cwd()
 
 
 class Reactions:
-    def __init__(self, biochem_root=os.path.join(path.parent, 'files', 'biochemistry'),
-                 rxns_file='reactions.tsv'):
+    def __init__(self, rxns_file='reactions.tsv'):
+        
+        self.path = Path(os.path.dirname(__file__))
+        self.BiochemRoot = os.path.join(self.path.parent, 'files', 'biochemistry')
 
-        self.BiochemRoot = biochem_root
+        
         self.RxnsFile = os.path.join(self.BiochemRoot, rxns_file)
         self.AliasFile = os.path.join(self.BiochemRoot,  "Aliases", "Unique_ModelSEED_Reaction_Aliases.txt")
         self.NameFile = os.path.join(self.BiochemRoot, "Aliases", "Unique_ModelSEED_Reaction_Names.txt")
