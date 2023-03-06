@@ -48,6 +48,8 @@ def refine_model(gpfilledModel, draftModel=None, scale = 1000, unscalled = None)
     '''
     
     mc = gpfilledModel.copy()
+    if unscalled is None:
+        unscalled=[]
     
     for metab in mc.metabolites:
         
