@@ -9,6 +9,7 @@ import gurobipy as gu
 from reaction_class import Reaction
 import cobra
 from copy import deepcopy
+import numpy as np
 
 
 def create_EX_reactions(metab_dict, direction = 'both'):
@@ -82,23 +83,52 @@ def build_gurobi_model(reaction_dict, metabolite_dict, objective_name, model_rea
     #set the objective function
     var = m.getVars()
     coef=[]
-    for i in var:
-        if i.VarName==objective_name:
-            coef.append(delta)
-            
-        elif i.VarName in candidate_reactions:
-            cost = candidate_reactions[i.VarName]
-            coef.append(-cost) #Costs are assumed to be positive numbers in input.
-            
-        elif i.VarName in model_reactions: #reactions in the draft model have cost zero
-            coef.append(0)
+    
+    
+    if delta >1:
+        for i in var:
+            if i.VarName==objective_name:
+                coef.append(delta)
+                
+            elif i.VarName in candidate_reactions:
+                cost = candidate_reactions[i.VarName]
+                coef.append(-cost) #Costs are assumed to be positive numbers in input.
+                
+            elif i.VarName in model_reactions: #reactions in the draft model have cost zero
+                coef.append(0)
             
         # elif i.VarName in export_reactions: #export reactions have cost zero
         #     coef.append(0)
             
-        else:
-            print ('Cannot set objective for %s, not objective_name, model, export or candidate reaction!' %i.VarName)
+            else:
+                print ('Cannot set objective for %s, not objective_name, model, export or candidate reaction!' %i.VarName)
+        
+    
+        
 
+        
+    
+    else:
+        for i in var:
+            if i.VarName==objective_name:
+                coef.append(1)
+                
+            elif i.VarName in candidate_reactions:
+                cost = candidate_reactions[i.VarName]
+                coef.append(0) #Costs are assumed to be positive numbers in input.
+                
+            elif i.VarName in model_reactions: #reactions in the draft model have cost zero
+                coef.append(0)
+            
+        # elif i.VarName in export_reactions: #export reactions have cost zero
+        #     coef.append(0)
+            
+            else:
+                print ('Cannot set objective for %s, not objective_name, model, export or candidate reaction!' %i.VarName)
+        
+        
+        
+        
     m.setObjective(gu.LinExpr(coef, var), gu.GRB.MAXIMIZE) #set the objective expression
     m.update()    
     #set the stoichiometric constraints for metabolites    
@@ -106,14 +136,14 @@ def build_gurobi_model(reaction_dict, metabolite_dict, objective_name, model_rea
         var = metabolite_dict[i].keys()
         var = [m.getVarByName(z) for z in var]
         coef = metabolite_dict[i].values()
-        m.addConstr(gu.LinExpr(coef, var), 'E', 0, i)  
+        m.addLConstr(gu.LinExpr(coef, var), 'E', 0, i)  
         
     m.update()
     m.setParam('OutputFlag', False) #Keep gurobi silent
     m.optimize()
     return m
 
-def get_minimum(R, R_flux, R_cost, D, criteria=None):
+def get_minimum(R, R_flux, R_cost, criteria=None):
     
     '''
     Each iteraction of the latendress_gapfill generates a viable gapfilling set.
@@ -137,24 +167,24 @@ def get_minimum(R, R_flux, R_cost, D, criteria=None):
         if sum_cost != []:
             min_cost = min(sum_cost)
             min_cost_index = sum_cost.index(min_cost)
-            return R[min_cost_index], D[min_cost_index]
+            return R[min_cost_index]
     
     if criteria == 'min_reactions':
         len_reactions = [len(e) for e in R]
         if len_reactions != []:
             min_reactions = min(len_reactions)
             min_reactions_index = len_reactions.index(min_reactions)
-            return R[min_reactions_index], D[min_reactions_index]
+            return R[min_reactions_index]
     
     if criteria == 'min_flux':
         sum_flux = [sum(flux) for flux in R_flux]
         if sum_flux != []:
             min_flux = min(sum_flux)
             min_flux_index = sum_flux.index(min_flux)
-            return R[min_flux_index], D[min_flux_index]
+            return R[min_flux_index]
     
     else:
-        return R[-1], 0
+        return R[-1]#, 0
     
 def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
     """
@@ -173,9 +203,13 @@ def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
     R_flux = [] #reaction fluxes
     R_cost = [] #reaction costs
     D = [] #deltas
+    proposed_model = []
+    
     alpha = 0
     beta = 2 * len(M)
-    delta = int((alpha + beta) / 2.0) #Take the floor function of the mean of alpha and beta.
+    
+    x = [i for i in M if i not in N]
+    
     
     #format reactions for gurobi model
     reaction_dict = all_reactions_split.get_gurobi_reaction_dict(all_reactions_split.reactions.keys())
@@ -183,43 +217,77 @@ def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
     #format metabolites for gurobi_model
     metabolite_dict = all_reactions_split.get_gurobi_metabolite_dict(all_reactions_split.reactions.keys())
     
+    #check if the model is gapfillable :)
+    gu_model = build_gurobi_model(reaction_dict, metabolite_dict, B, N, M, delta=1)
+    
+    
+    R.append([var.VarName for var in gu_model.getVars() if (var.VarName not in N) and (var.X != 0)])
+
+    max_obj = gu_model.getVarByName(B).X
+    print ('Flux through biomass reaction is {:.8f}'.format(max_obj))
+    
+    
+    
     
     #main loop
-    gu_model = build_gurobi_model(reaction_dict, metabolite_dict, B, N, M, delta)
     
-    max_obj = gu_model.getVarByName(B).X
     
-    limit = 0.05*max_obj
+    #there is no solution for the model,
+    #probably the medium is too restrictive
+    if np.round(gu_model.getVarByName(B).X,6) ==0:
+        
+        return None
     
-    while abs(alpha - beta) > 1:
+    
+    print ('Flux through biomass reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
+    
+    
+    while abs(alpha - beta) > 1:#converting the "loop until" into a while loop
+    
+        
+        sizeR = len(R[-1])
+        
+        
+        print("current R is: ", sizeR)
         
         delta = int((alpha + beta) / 2.0)
         print ('Delta is {:.2f}'.format(delta))
+        
         gu_model = build_gurobi_model(reaction_dict, metabolite_dict, B, N, M, delta)
-        if gu_model.getVarByName(B).X > limit:
+        
+        if np.round(gu_model.getVarByName(B).X,6) > 0:
             print ('Flux through biomass reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
-            beta = delta
             
-            #Store results      
-            
-            #reaction ids
-            R.append([var.VarName for var in gu_model.getVars() if var.VarName in N or gu_model.getVarByName(var.VarName).X > 0])
+            R.append([var.VarName for var in gu_model.getVars() if (var.VarName not in N) and (var.X != 0)])
+            #proposed_model.append([var.VarName for var in gu_model.getVars() if var.VarName in N or gu_model.getVarByName(var.VarName).X > 0])
             
             
             # reaction fluxes
-            R_flux.append([gu_model.getVarByName(e).X for e in M if gu_model.getVarByName(e).X > 0])
+            R_flux.append([gu_model.getVarByName(e).X for e in M if np.round(gu_model.getVarByName(e).X,6) > 0])
             
             #costs of candidate reactions retained in the model
             R_cost.append([M[e] for e in M if gu_model.getVarByName(e).X > 0])
             
             #delta
             D.append(delta)
+            
+            beta = delta
+            
+            #if len(R[-1])<sizeR:
+                
+                
+            #else:
+                
            
         else:
-            print ('Flux through objective reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
             alpha = delta
+            #R[-1] = R[-1]
+            #proposed_model[-1] = proposed_model[-2]
+            print ('Flux through objective reaction is {:.8f}'.format(gu_model.getVarByName(B).X))
+            #alpha = delta
             pass
-    minimum_set = get_minimum(R, R_flux, R_cost, D, result_selection) #List that has minimum nr of reactions, sum of cost or sum of flux, dependend on output.
+        print('\n\n', 'condition is currently: ', abs(alpha - beta), '\n\n')
+    minimum_set = get_minimum(R, R_flux, R_cost, result_selection) #List that has minimum nr of reactions, sum of cost or sum of flux, dependend on output.
     return  minimum_set
 
 
@@ -269,7 +337,7 @@ def make_cobra_model(reaction_dict, metab_dict, reactions_in_model, objective_na
 
 
 
-def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medium = 'complete', default_cost = 1, result_selection = 'min_cost'):
+def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, default_cost = 1, result_selection = 'min_cost'):
     '''
     Gapfill an incomplete model
     
@@ -307,40 +375,28 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
     the value of the obj
     list of added reactions
     '''
+    
+    
+    
+    
     all_reacs = deepcopy(all_reactions.reactions)
+    
+    
+    
+    
     
     all_reacs_obj = Reaction()
     all_reacs_obj.reactions = all_reacs.copy()
-    
     cand_reacs = candidate_reactions.copy()
     
-    #Create medium-defining external reactions or use ex_reactions from custom medium.
-    if medium == 'complete':
-        metabolites = all_reacs_obj.get_gurobi_metabolite_dict()
-        
-        ex_reactions = Reaction()
-        ex_reactions.reactions = create_EX_reactions(metabolites)
-        
-        
-        
-    
-    else:
-        ex_reactions = Reaction()
-        ex_reactions.reactions = medium#same format as the output of the function create_EX_reactions
-        for i in ex_reactions.reactions:
-            cand_reacs[i] = 0.0 #add media reactions with a zero cost
-        
-    all_reacs = all_reacs_obj.add_dict(all_reacs_obj.reactions, ex_reactions.reactions)
-    
-    all_reacs_obj.reactions = all_reacs
     
     
     
-    #make sure the model cannot import biomass :)
-    all_reacs['EX_cpd11416_e0']={'upper_bound':1, 'lower_bound':0, 'metabolites':{'cpd11416_c0':-1}}
+
+    
     
     #Add reactions from all_reactions to candidate_reactions, with cost = default_cost.
-    for reaction in all_reacs:
+    for reaction in all_reacs_obj.reactions:
         if (reaction not in draft_reaction_ids) and (reaction not in cand_reacs):
             cand_reacs[reaction] = default_cost
     
@@ -368,21 +424,27 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, medi
         
     
     #Run gapfilling algorithm
-    split_gapfill_result, delta = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
+    split_gapfill_result = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
+    
+    
+    
+    if split_gapfill_result is None:
+        print("\n\n\n", "media is too restrictive. No growing model can be found :(", "\n\n\n")
+        return None, None, None
     
     gapfill_result = set([r.replace('_r', '') for r in split_gapfill_result])
     
-    added_reactions = gapfill_result.difference(draft_reaction_ids) #All reactions that are added to the model during gapfilling.
+    added_reactions = list(gapfill_result) #All reactions that are added to the model during gapfilling.
+    
+    gapfill_result.update(draft_reaction_ids)
+    
     #Create cobra model
     
-    
-    
-    metab_dict = all_reacs_obj.get_gurobi_metabolite_dict()
-    
-    cobra_model = make_cobra_model(all_reacs, metab_dict, gapfill_result, obj_id)
-    
-    objective_value = cobra_model.optimize().objective_value
-    
+   
+   
+    metab_dict      = all_reacs_obj.get_gurobi_metabolite_dict()
+    cobra_model     = make_cobra_model(all_reacs, metab_dict, gapfill_result, obj_id) 
+    objective_value = cobra_model.optimize().objective_value    
     print ('Objective value is %f.' %objective_value)
 
    
