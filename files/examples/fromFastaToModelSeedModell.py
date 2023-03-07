@@ -174,7 +174,7 @@ for react in exchange_reacs.reactions:
 ##################################################
 
 
-p = NN_Predictor.make_prediction( draft_reaction_ids, trainedNN = path_to_NN) 
+p = NN_Predictor.predict( draft_reaction_ids, trainedNN = path_to_NN) 
 weights = {}
 for i in p:
     weights[i]  = np.round(1-p[i], 10)

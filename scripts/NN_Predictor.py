@@ -60,7 +60,7 @@ def load_ids(nnpath=trainedNN):
     ids = np.load(nfile, allow_pickle=True).astype('str')
     return ids
 #Function that makes a prediction based on input_data using Neural Network (NN)
-def make_prediction(input, trainedNN=None, rxn_ids=None):
+def predict(input, trainedNN=None, rxn_ids=None):
     '''
     
 

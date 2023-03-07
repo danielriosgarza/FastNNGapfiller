@@ -180,7 +180,7 @@ def get_minimum(R, R_flux, R_cost, criteria=None):
     else:
         return R[-1]#, 0
     
-def latendresse_gapfill(all_reactions_split, N, M, B, result_selection):
+def binarySearch(all_reactions_split, N, M, B, result_selection):
     """
     Function based on Latendresse BMC Bioinformatics 2014.
     Input:
@@ -418,7 +418,7 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, defa
         
     
     #Run gapfilling algorithm
-    split_gapfill_result = latendresse_gapfill(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
+    split_gapfill_result = binarySearch(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
     
     
     
