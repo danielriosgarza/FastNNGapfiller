@@ -1,10 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 20 14:51:22 2019
 
-@author: jan
-"""
 import gurobipy as gu
 from reaction_class import Reaction
 import cobra
