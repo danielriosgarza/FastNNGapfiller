@@ -4,6 +4,7 @@ setup(
     name='FastNNGapfiller',
     version='0.1.0',
     packages=find_packages(include=['FastNNGapfiller', 'FastNNGapfiller.*']),
+    ext_modules=find_packages(include=['files']),
     install_requires=[
         'cobra',
         'numpy>=1.14.5',
