@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar  5 08:35:26 2023
-
-@author: danie
-"""
-
 import cobra
 from reaction_class import Reaction
 import os
@@ -58,3 +51,4 @@ blank_model.add_reactions(reactionsToadd)
 
 models = os.path.join(path.parent, 'files',  'models', 'exchangeReactions.sbml')
 cobra.io.write_sbml_model(blank_model, filename=models)
+

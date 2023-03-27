@@ -5,7 +5,6 @@ import cobra
 from copy import deepcopy
 import numpy as np
 
-
 def create_EX_reactions(metab_dict, direction = 'both'):
     '''
     Create an exchange reaction  for external metabolites in a metab_dict.
@@ -255,7 +254,6 @@ def binarySearch(all_reactions_split, N, M, B, result_selection):
             R.append([var.VarName for var in gu_model.getVars() if (var.VarName not in N) and (var.X != 0)])
             #proposed_model.append([var.VarName for var in gu_model.getVars() if var.VarName in N or gu_model.getVarByName(var.VarName).X > 0])
             
-            
             # reaction fluxes
             R_flux.append([gu_model.getVarByName(e).X for e in M if np.round(gu_model.getVarByName(e).X,6) > 0])
             
@@ -283,7 +281,6 @@ def binarySearch(all_reactions_split, N, M, B, result_selection):
         print('\n\n', 'condition is currently: ', abs(alpha - beta), '\n\n')
     minimum_set = get_minimum(R, R_flux, R_cost, result_selection) #List that has minimum nr of reactions, sum of cost or sum of flux, dependend on output.
     return  minimum_set
-
 
 
 def make_cobra_metabolites(metab_dict):
@@ -330,7 +327,6 @@ def make_cobra_model(reaction_dict, metab_dict, reactions_in_model, objective_na
     return cobra_model
 
 
-
 def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, default_cost = 1, result_selection = 'min_cost'):
     '''
     Gapfill an incomplete model
@@ -347,7 +343,7 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, defa
     candidate_reactions, dict
     This is a dictionary mapping reaction_ids to their cost during gap filling. 
     When reactions are not present in candidate_reactions, their cost will be default_cost.
-         
+
     obj_id, str
     the reaction id correspoding to the objective.
             
@@ -411,11 +407,9 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, defa
         forward_version = reaction.replace('_r', '')
         if forward_version in draft_reaction_ids:
             draft_reaction_ids_split.add(reaction)
-        else:#If forward version of a reverse reaction is in candidate_reactions.
+        else:   #If forward version of a reverse reaction is in candidate_reactions.
             if '_r' in reaction:
                 cand_reacs[reaction] = cand_reacs[forward_version] #Give reverse reaction same cost as forward version.
-    
-        
     
     #Run gapfilling algorithm
     split_gapfill_result = binarySearch(all_reactions_split, draft_reaction_ids_split, cand_reacs, obj_id, result_selection)
@@ -441,6 +435,11 @@ def gapfill(all_reactions, draft_reaction_ids, candidate_reactions, obj_id, defa
     objective_value = cobra_model.optimize().objective_value    
     print ('Objective value is %f.' %objective_value)
 
+    #Create cobra model    
+    metab_dict      = all_reacs_obj.get_gurobi_metabolite_dict()
+    cobra_model     = make_cobra_model(all_reacs, metab_dict, gapfill_result, obj_id)    
+    objective_value = cobra_model.optimize().objective_value    
+    print ('Objective value is %f.' %objective_value)
    
     return cobra_model, objective_value, added_reactions#, gapfill_result, all_reacs_obj
 

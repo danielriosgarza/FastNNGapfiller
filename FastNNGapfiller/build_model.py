@@ -5,8 +5,8 @@ Created on Fri Jul 23 11:17:28 2021
 @author: u0139894
 """
 import cobra
-from MSEED_compounds import Compounds
-from MSEED_reactions import Reactions
+from .MSEED_compounds import Compounds
+from .MSEED_reactions import Reactions
 
 
 #Use script from ModelSEED biochemistry to parse all metabolite/reaction info
@@ -114,8 +114,8 @@ def refine_model(gpfilledModel, draftModel=None, scale = 1000, unscalled = None)
                 if mc.reactions.has_id(reaction.id):
                     mc.reactions.get_by_id(reaction.id).gene_reaction_rule = reaction.gene_reaction_rule
                     
-    #change internal fluxes to +/- 1000            
-    for reaction in mc.reactions:
+#     #change internal fluxes to +/- 1000            
+#     for reaction in mc.reactions:
         
         if reaction.id not in unscalled:
             reaction.lower_bound *= scale

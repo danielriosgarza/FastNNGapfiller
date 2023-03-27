@@ -62,8 +62,6 @@ def load_ids(nnpath=trainedNN):
 #Function that makes a prediction based on input_data using Neural Network (NN)
 def predict(input, trainedNN=None, rxn_ids=None):
     '''
-    
-
     Parameters
     ----------
     input : TYPE
@@ -114,7 +112,6 @@ def predict(input, trainedNN=None, rxn_ids=None):
     if not isinstance(trainedNN, Sequential):
         raise Exception('Type: {} not supported'.format(type(trainedNN)))
 
-
     single_input=False
     #test for single input (trips up trainedNN)
     if np.ndim(input) == 1:
@@ -137,8 +134,6 @@ def predict(input, trainedNN=None, rxn_ids=None):
 #function that generates a binary input based on a list of reaction ids
 def convert_reaction_list(reaction_set, NN_reaction_ids = None, trainedNN = None):
     '''
-    
-
     Parameters
     ----------
     reaction_set : TYPE

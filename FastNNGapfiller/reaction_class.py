@@ -62,8 +62,6 @@ class Reaction:
         self.biochem_input = self.__get_reactions_from_biochem_input(biochem_input)
         
         self.reactions = self.__get_reactions()
-        
-        
     
     
          

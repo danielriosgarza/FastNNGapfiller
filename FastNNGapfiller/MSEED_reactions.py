@@ -26,7 +26,7 @@ class Reactions:
         reader = DictReader(open(self.RxnsFile), dialect='excel-tab')
         self.Headers = reader.fieldnames
 
-        from MSEED_compounds import Compounds
+        from .MSEED_compounds import Compounds
         self.CompoundsHelper = Compounds()
         self.Compounds_Dict = self.CompoundsHelper.loadCompounds()
 
