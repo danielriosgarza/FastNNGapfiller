@@ -5,8 +5,8 @@ Created on Fri Jul 23 11:17:28 2021
 @author: u0139894
 """
 import cobra
-from MSEED_compounds import Compounds
-from MSEED_reactions import Reactions
+from .MSEED_compounds import Compounds
+from .MSEED_reactions import Reactions
 
 
 #Use script from ModelSEED biochemistry to parse all metabolite/reaction info
