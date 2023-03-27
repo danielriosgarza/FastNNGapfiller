@@ -8,18 +8,14 @@ Created on Mon Jul 12 23:16:07 2021
 
 #imports
 import cobra
-
 import numpy as np
-
 import os
-
 import ast
 
-#import gurobipy as gu
 
 class Reaction:
     
-    def __init__(self, model_folder=None, model_list=None, model=None, biochem_input=None):
+    def __init__(self, model_folder=None, model_list=None, model=None, biochem_input=None, fixed_bounds=None):
         '''
         General class to handle reaction sets from metabolic models.
         
@@ -55,6 +51,7 @@ class Reaction:
 
         '''
         
+        self.fixed_bounds = fixed_bounds
         
         self.model_folder = model_folder
         
@@ -101,11 +98,9 @@ class Reaction:
         reactions={}
         for reaction in model.reactions:
             
-            if 'EX_' not in reaction.id:
-            
-                reactions[reaction.id] = {'lower_bound': (reaction.lower_bound and abs(reaction.lower_bound)/reaction.lower_bound or 0), 'upper_bound': (reaction.upper_bound and abs(reaction.upper_bound)/reaction.upper_bound or 0)}
-                mets = reaction.metabolites
-                reactions[reaction.id]['metabolites']={i.id:mets[i] for i in mets}
+            reactions[reaction.id] = {'lower_bound': (reaction.lower_bound and abs(reaction.lower_bound)/reaction.lower_bound or 0), 'upper_bound': (reaction.upper_bound and abs(reaction.upper_bound)/reaction.upper_bound or 0)}
+            mets = reaction.metabolites
+            reactions[reaction.id]['metabolites']={i.id:mets[i] for i in mets}
                 
         return reactions
     
@@ -178,6 +173,13 @@ class Reaction:
         _d = dict_y.copy()
         _d.update(dict_x)
         
+        if self.fixed_bounds is not None: 
+            for reaction in self.fixed_bounds:
+
+                if reaction in _d: 
+                    _d[reaction]['lower_bound'] = self.fixed_bounds[reaction]['lower_bound']
+                    _d[reaction]['upper_bound'] = self.fixed_bounds[reaction]['upper_bound']
+        
         return _d
     
     def __get_reactions(self):
@@ -215,10 +217,18 @@ class Reaction:
                 mod_reac=self.__get_reactions_from_model(mod)
                 reaction_dict= self.add_dict(reaction_dict, mod_reac)
         
-        
             
         if self.biochem_input is not None:
             reaction_dict = self.add_dict(reaction_dict, self.biochem_input)
+            
+        
+        if self.fixed_bounds is not None: 
+
+            for reaction in self.fixed_bounds:
+
+                if reaction in reaction_dict: 
+                    reaction_dict[reaction]['lower_bound'] = self.fixed_bounds[reaction]['lower_bound']
+                    reaction_dict[reaction]['upper_bound'] = self.fixed_bounds[reaction]['upper_bound']
             
         self.reactions = reaction_dict
         return self.reactions

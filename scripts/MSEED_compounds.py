@@ -12,13 +12,13 @@ from csv import DictReader
 
 import os
 from pathlib import Path
-path = Path.cwd()
+
 
 class Compounds:
-    def __init__(self, biochem_root=os.path.join(path.parent, 'files', 'biochemistry'),
-                 cpds_file='compounds.tsv'):
+    def __init__(self, cpds_file='compounds.tsv'):
 
-        self.BiochemRoot = biochem_root
+        self.path = Path(os.path.dirname(__file__))
+        self.BiochemRoot = os.path.join(self.path.parent, 'files', 'biochemistry')
         self.CpdsFile = os.path.join(self.BiochemRoot, cpds_file)
         self.AliasFile = os.path.join(self.BiochemRoot, "Aliases", "Unique_ModelSEED_Compound_Aliases.txt")
         self.NameFile = os.path.join(self.BiochemRoot, "Aliases", "Unique_ModelSEED_Compound_Names.txt")
