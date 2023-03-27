@@ -3,6 +3,8 @@
 
 # Installation instructions
 
+`python -m pip install -e .`
+
 # Examples of usage 
 
 [how to use cobrapy and gapfill models](https://github.com/danielriosgarza/FastNNGapfiller/blob/main/files/examples/cobrapy.md)
